@@ -2,10 +2,10 @@ package com.reactivemobile.rainfall.presentation.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -45,37 +45,34 @@ class RainfallFragment : Fragment() {
         (activity?.application as RainfallApplication).appComponent.inject(this)
     }
 
-    private fun loadStations() {
-        viewModel.fetchStationList()
-    }
-
     private fun setupObservers() {
         viewModel.stations.observe(viewLifecycleOwner, { stationList ->
-            updateMap(stationList)
-        })
+            customInfoWindowAdapter = CustomInfoWindowAdapter(layoutInflater)
+            googleMap.setInfoWindowAdapter(customInfoWindowAdapter)
 
-        viewModel.stationDetails.observe(viewLifecycleOwner, { station ->
-            //updateMap(stationList)
-            // TODO This will be coming from the database rather than being exposed here
-            Toast.makeText(requireContext(), "Got details ${station.latestReading}${station.unit} at ${station.dateTime}", Toast.LENGTH_SHORT).show()
+            updateMap(stationList)
         })
     }
 
     private fun updateMap(stationList: List<Station>) {
         googleMap.clear()
 
-        val latLngBoundsBuilder = LatLngBounds.builder()
+        if (stationList.isNotEmpty()) {
+            val latLngBoundsBuilder = LatLngBounds.builder()
 
-        for (station in stationList) {
-            val position = LatLng(station.latitude, station.longitude)
-            val marker = MarkerOptions().position(position).title(station.id)
+            for (station in stationList) {
+                val position = LatLng(station.latitude, station.longitude)
+                val marker = MarkerOptions().position(position).title(station.id)
 
-            latLngBoundsBuilder.include(position)
-            googleMap.addMarker(marker).tag = station
+                latLngBoundsBuilder.include(position)
+                googleMap.addMarker(marker).tag = station
+            }
+
+            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 0)
+            googleMap.animateCamera(cameraUpdate)
+
+            customInfoWindowAdapter
         }
-
-        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 0)
-        googleMap.animateCamera(cameraUpdate)
     }
 
     private fun setupMap() {
@@ -85,18 +82,17 @@ class RainfallFragment : Fragment() {
             googleMap = it
             googleMap.uiSettings.isMyLocationButtonEnabled = true
             googleMap.uiSettings.isMapToolbarEnabled = false
-            customInfoWindowAdapter = CustomInfoWindowAdapter(layoutInflater)
-            googleMap.setInfoWindowAdapter(customInfoWindowAdapter)
 
             googleMap.setOnMarkerClickListener { marker ->
                 val station = marker.tag as Station
-                viewModel.fetchStationDetails(station)
-                false
+                Log.e("XXX", "Marker clicked ${station.id}")
+                StationDetailsFragment.newInstance(station.id).show(childFragmentManager, null)
+                true
             }
 
-            loadStations()
-
             map.onResume()
+
+            viewModel.fetchStationList()
         }
 
         map.getMapAsync(callback)

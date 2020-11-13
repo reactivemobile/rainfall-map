@@ -1,10 +1,15 @@
 package com.reactivemobile.rainfall.di.module
 
+import android.content.Context
 import com.reactivemobile.rainfall.BuildConfig
+import com.reactivemobile.rainfall.data.database.RainfallDatabase
+import com.reactivemobile.rainfall.data.database.dao.RainfallDao
+import com.reactivemobile.rainfall.data.database.mapper.DbMapper
 import com.reactivemobile.rainfall.data.network.client.RainfallClient
 import com.reactivemobile.rainfall.data.network.mapper.ApiMapper
 import com.reactivemobile.rainfall.domain.repository.RainfallRepository
 import com.reactivemobile.rainfall.presentation.ui.RainfallViewModelFactory
+import com.reactivemobile.rainfall.presentation.ui.StationDetailsViewModelFactory
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-class AppModule {
+class AppModule(private val context: Context) {
 
     @Provides
     @Singleton
@@ -38,17 +43,37 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideRainfallDao(): RainfallDao = RainfallDatabase.create(context).rainfallDao()
+
+    @Provides
+    @Singleton
     fun provideApiMapper(): ApiMapper = ApiMapper()
+
+    @Provides
+    @Singleton
+    fun provideDbMapper(): DbMapper = DbMapper()
 
     @Provides
     @Singleton
     fun provideRepository(
         coroutineDispatcher: CoroutineDispatcher,
         rainfallClient: RainfallClient,
-        apiMapper: ApiMapper
-    ): RainfallRepository = RainfallRepository(coroutineDispatcher, rainfallClient, apiMapper)
+        apiMapper: ApiMapper,
+        rainfallDao: RainfallDao,
+        dbMapper: DbMapper
+    ): RainfallRepository = RainfallRepository(
+        coroutineDispatcher,
+        rainfallClient,
+        apiMapper,
+        rainfallDao,
+        dbMapper
+    )
 
     @Provides
     @Singleton
-    fun provideViewModelFactory(repository: RainfallRepository): RainfallViewModelFactory = RainfallViewModelFactory(repository)
+    fun provideRainfallViewModelFactory(repository: RainfallRepository): RainfallViewModelFactory = RainfallViewModelFactory(repository)
+
+    @Provides
+    @Singleton
+    fun provideStationDetailsViewModelFactory(repository: RainfallRepository): StationDetailsViewModelFactory = StationDetailsViewModelFactory(repository)
 }
