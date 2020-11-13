@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -24,6 +25,7 @@ class RainfallFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = inflater.inflate(R.layout.fragment_rainfall, container, false)
 
+    private lateinit var customInfoWindowAdapter: CustomInfoWindowAdapter
     private lateinit var googleMap: GoogleMap
 
     @Inject
@@ -51,6 +53,12 @@ class RainfallFragment : Fragment() {
         viewModel.stations.observe(viewLifecycleOwner, { stationList ->
             updateMap(stationList)
         })
+
+        viewModel.stationDetails.observe(viewLifecycleOwner, { station ->
+            //updateMap(stationList)
+            // TODO This will be coming from the database rather than being exposed here
+            Toast.makeText(requireContext(), "Got details ${station.latestReading}${station.unit} at ${station.dateTime}", Toast.LENGTH_SHORT).show()
+        })
     }
 
     private fun updateMap(stationList: List<Station>) {
@@ -77,7 +85,14 @@ class RainfallFragment : Fragment() {
             googleMap = it
             googleMap.uiSettings.isMyLocationButtonEnabled = true
             googleMap.uiSettings.isMapToolbarEnabled = false
-            googleMap.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
+            customInfoWindowAdapter = CustomInfoWindowAdapter(layoutInflater)
+            googleMap.setInfoWindowAdapter(customInfoWindowAdapter)
+
+            googleMap.setOnMarkerClickListener { marker ->
+                val station = marker.tag as Station
+                viewModel.fetchStationDetails(station)
+                false
+            }
 
             loadStations()
 
@@ -104,7 +119,6 @@ class RainfallFragment : Fragment() {
 
         override fun getInfoContents(marker: Marker): View {
             val station = marker.tag as Station
-
             return customLayout
         }
     }

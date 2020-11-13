@@ -12,10 +12,19 @@ class RainfallViewModel @Inject constructor(private val rainfallRepository: Rain
 
     val stations: MutableLiveData<List<Station>> = MutableLiveData()
 
+    val stationDetails: MutableLiveData<Station> = MutableLiveData()
+
     fun fetchStationList() {
         viewModelScope.launch {
-            val stationList = rainfallRepository.getStations()
+            val stationList = rainfallRepository.getStationList()
             stations.postValue(stationList) // TODO map errors
+        }
+    }
+
+    fun fetchStationDetails(existingStation: Station) {
+        viewModelScope.launch {
+            val station = rainfallRepository.getStationDetails(station = existingStation)
+            stationDetails.postValue(station) // TODO map errors
         }
     }
 }
