@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Rainfall</string>
-    <string name="last_measurement">Last measurement %$1s%$2s</string>
-    <string name="getting_latest_measurement">Getting latest measurement</string>
+    <string name="latest_reading">%.2f%2$s at %3$s</string>
+    <string name="getting_latest_reading">Getting latest reading</string>
+    <string name="error_loading_details">Error loading reading</string>
+    <string name="reading_unavailable">Reading unavailable for this station</string>
+    <string name="loaded_stations_from_cache">Loaded stations from cache</string>
+    <string name="unable_to_load_stations_retry">Unable to load stations - Retry?</string>
 
 </resources>

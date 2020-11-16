@@ -18,7 +18,7 @@ class RainfallRepository @Inject constructor(
     private val rainfallDao: RainfallDao,
     private val dbMapper: DbMapper
 ) {
-    suspend fun fetchStationList() = withContext(ioDispatcher) {
+    suspend fun fetchStationList(): Boolean = withContext(ioDispatcher) {
         val stations =
             try {
                 rainfallClient.getStationList().items
@@ -29,14 +29,18 @@ class RainfallRepository @Inject constructor(
 
         if (stations != null) {
             rainfallDao.insertStations(dbMapper.mapStationDaoToDbObject(stations))
+            return@withContext true
         }
+        return@withContext false
     }
 
     suspend fun getStationDetails(stationId: String): StationDetails? = withContext(ioDispatcher) {
-        val response: StationDetailsDTO = rainfallClient.getStationDetails(stationId)
+        try {
+            val response: StationDetailsDTO = rainfallClient.getStationDetails(stationId)
 
-        response.items.firstOrNull()?.let {
-            apiMapper.mapStationDetailsDtoToDomainObject(it)
+            response.items.firstOrNull()?.let { apiMapper.mapStationDetailsDtoToDomainObject(it) }
+        } catch (e: Exception) {
+            null
         }
     }
 

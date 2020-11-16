@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commitNow
 import com.reactivemobile.rainfall.R
+import com.reactivemobile.rainfall.presentation.ui.map.StationsFragment
 
 class RainfallActivity : AppCompatActivity() {
 
@@ -11,12 +12,12 @@ class RainfallActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rainfall)
 
-        val fragment = RainfallFragment.newInstance()
+        val fragment = StationsFragment.newInstance()
         supportFragmentManager.commitNow {
             replace(
                 R.id.rootView,
                 fragment,
-                RainfallFragment.TAG
+                StationsFragment.TAG
             )
         }
     }

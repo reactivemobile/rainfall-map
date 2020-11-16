@@ -1,4 +1,4 @@
-package com.reactivemobile.rainfall.presentation.ui
+package com.reactivemobile.rainfall.presentation.ui.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

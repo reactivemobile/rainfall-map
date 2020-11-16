@@ -1,20 +1,14 @@
-package com.reactivemobile.rainfall.presentation.ui
+package com.reactivemobile.rainfall.presentation.ui.details
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.reactivemobile.rainfall.domain.model.StationDetails
 import com.reactivemobile.rainfall.domain.repository.RainfallRepository
+import com.reactivemobile.rainfall.presentation.toHumanReadableDate
 import kotlinx.coroutines.launch
 
 class StationDetailsViewModel(private val repository: RainfallRepository, private val stationId: String) : ViewModel() {
-
-
-    init {
-        Log.e("XXX", "init $stationId")
-    }
 
     private val _stationDetails = MutableLiveData<StationDetailsEvent>()
 
@@ -26,7 +20,7 @@ class StationDetailsViewModel(private val repository: RainfallRepository, privat
             val stationDetails = repository.getStationDetails(stationId)
 
             val outcome = if (stationDetails != null) {
-                StationDetailsEvent.StationDetailsSuccess(stationDetails)
+                StationDetailsEvent.StationDetailsSuccess(stationDetails.depth, stationDetails.unit, stationDetails.date?.toHumanReadableDate())
             } else {
                 StationDetailsEvent.StationDetailsFailure
             }
@@ -36,7 +30,7 @@ class StationDetailsViewModel(private val repository: RainfallRepository, privat
     }
 
     sealed class StationDetailsEvent {
-        class StationDetailsSuccess(val stationDetails: StationDetails) : StationDetailsEvent()
+        class StationDetailsSuccess(val depth: Double?, val unit: String?, val date: String?) : StationDetailsEvent()
         object StationDetailsFailure : StationDetailsEvent()
     }
 }

@@ -8,8 +8,8 @@ import com.reactivemobile.rainfall.data.database.mapper.DbMapper
 import com.reactivemobile.rainfall.data.network.client.RainfallClient
 import com.reactivemobile.rainfall.data.network.mapper.ApiMapper
 import com.reactivemobile.rainfall.domain.repository.RainfallRepository
-import com.reactivemobile.rainfall.presentation.ui.RainfallViewModelFactory
-import com.reactivemobile.rainfall.presentation.ui.StationDetailsViewModelFactory
+import com.reactivemobile.rainfall.presentation.ui.details.StationDetailsViewModelFactory
+import com.reactivemobile.rainfall.presentation.ui.map.StationsViewModelFactory
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
@@ -71,7 +71,7 @@ class AppModule(private val context: Context) {
 
     @Provides
     @Singleton
-    fun provideRainfallViewModelFactory(repository: RainfallRepository): RainfallViewModelFactory = RainfallViewModelFactory(repository)
+    fun provideRainfallViewModelFactory(repository: RainfallRepository): StationsViewModelFactory = StationsViewModelFactory(repository)
 
     @Provides
     @Singleton

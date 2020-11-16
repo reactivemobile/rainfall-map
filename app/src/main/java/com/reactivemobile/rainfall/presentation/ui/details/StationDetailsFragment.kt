@@ -1,4 +1,4 @@
-package com.reactivemobile.rainfall.presentation.ui
+package com.reactivemobile.rainfall.presentation.ui.details
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import com.reactivemobile.rainfall.R
 import com.reactivemobile.rainfall.application.RainfallApplication
 import com.reactivemobile.rainfall.presentation.gone
-import com.reactivemobile.rainfall.presentation.toHumanReadableDate
+import com.reactivemobile.rainfall.presentation.ui.details.StationDetailsViewModel.StationDetailsEvent.StationDetailsSuccess
 import kotlinx.android.synthetic.main.fragment_station_details.*
 import javax.inject.Inject
 
@@ -41,17 +41,13 @@ class StationDetailsFragment : DialogFragment() {
     private fun setupObservers() {
         viewModel.stationDetails.observe(viewLifecycleOwner, { stationDetailsEvent ->
             progressBar.gone()
-            if (stationDetailsEvent is StationDetailsViewModel.StationDetailsEvent.StationDetailsSuccess) {
-                with(stationDetailsEvent.stationDetails)
+            if (stationDetailsEvent is StationDetailsSuccess) {
+                with(stationDetailsEvent)
                 {
-                    // TODO Move to viewmodel so only a string is sent to view
-                    val depthString = depth ?: "n/a "
-                    val dateString = date?.toHumanReadableDate() ?: "n/a"
-                    val data = "${id}\n\n$depthString$unit at $dateString"
-                    name.text = data
+                    name.text = depth?.let { getString(R.string.latest_reading, depth, unit, date) } ?: getString(R.string.reading_unavailable)
                 }
             } else {
-                name.text = "Error loading details"
+                name.text = getString(R.string.error_loading_details)
             }
         })
     }
