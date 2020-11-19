@@ -1,6 +1,6 @@
 # Rainfall Map
 
-A demo app using MVVM and Jetpack components inclusing MVVM, Coroutines, Flow and Room 
+A demo app using MVVM and Jetpack components inclusing Coroutines, Flow and Room 
 
 # Rainfall Data
 
