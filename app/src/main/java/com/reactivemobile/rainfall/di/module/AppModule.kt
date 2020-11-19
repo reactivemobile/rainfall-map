@@ -1,7 +1,6 @@
 package com.reactivemobile.rainfall.di.module
 
 import android.content.Context
-import com.reactivemobile.rainfall.BuildConfig
 import com.reactivemobile.rainfall.data.database.RainfallDatabase
 import com.reactivemobile.rainfall.data.database.dao.RainfallDao
 import com.reactivemobile.rainfall.data.database.mapper.DbMapper
@@ -28,18 +27,11 @@ class AppModule(private val context: Context) {
 
     @Provides
     @Singleton
-    fun provideRainfallClient(): RainfallClient {
-        val client = OkHttpClient.Builder()
-
-        if (BuildConfig.DEBUG) {
-            //client.addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
-        }
-
-        return Retrofit.Builder().baseUrl("https://environment.data.gov.uk")
-            .client(client.build())
+    fun provideRainfallClient(): RainfallClient =
+        Retrofit.Builder().baseUrl("https://environment.data.gov.uk")
+            .client(OkHttpClient.Builder().build())
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(RainfallClient::class.java)
-    }
 
     @Provides
     @Singleton
