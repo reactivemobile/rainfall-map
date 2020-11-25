@@ -11,10 +11,9 @@ import com.reactivemobile.rainfall.presentation.ui.details.StationDetailsViewMod
 import com.reactivemobile.rainfall.presentation.ui.map.StationsViewModelFactory
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -23,13 +22,10 @@ class AppModule(private val context: Context) {
 
     @Provides
     @Singleton
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
-
-    @Provides
-    @Singleton
     fun provideRainfallClient(): RainfallClient =
         Retrofit.Builder().baseUrl("https://environment.data.gov.uk")
             .client(OkHttpClient.Builder().build())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(RainfallClient::class.java)
 
@@ -48,13 +44,11 @@ class AppModule(private val context: Context) {
     @Provides
     @Singleton
     fun provideRepository(
-        coroutineDispatcher: CoroutineDispatcher,
         rainfallClient: RainfallClient,
         apiMapper: ApiMapper,
         rainfallDao: RainfallDao,
         dbMapper: DbMapper
     ): RainfallRepository = RainfallRepository(
-        coroutineDispatcher,
         rainfallClient,
         apiMapper,
         rainfallDao,

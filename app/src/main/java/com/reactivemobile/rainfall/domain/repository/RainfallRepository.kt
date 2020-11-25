@@ -4,48 +4,37 @@ import com.reactivemobile.rainfall.data.database.dao.RainfallDao
 import com.reactivemobile.rainfall.data.database.mapper.DbMapper
 import com.reactivemobile.rainfall.data.network.client.RainfallClient
 import com.reactivemobile.rainfall.data.network.mapper.ApiMapper
-import com.reactivemobile.rainfall.data.network.model.StationDetailsDTO
+import com.reactivemobile.rainfall.data.network.model.ItemDTO
+import com.reactivemobile.rainfall.domain.model.Station
 import com.reactivemobile.rainfall.domain.model.StationDetails
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 class RainfallRepository @Inject constructor(
-    private val ioDispatcher: CoroutineDispatcher,
     private val rainfallClient: RainfallClient,
     private val apiMapper: ApiMapper,
     private val rainfallDao: RainfallDao,
     private val dbMapper: DbMapper
 ) {
-    suspend fun fetchStationList(): Boolean = withContext(ioDispatcher) {
-        val stations =
-            try {
-                rainfallClient.getStationList().items
-                    .filter { it.lat != 0.0 && it.long != 0.0 } // Some stations are not reporting location correctly
-            } catch (e: Exception) {
-                null
+    fun fetchStationListRx(): Single<Boolean> =
+        rainfallClient.getStationListRx().map { it.items }
+            .flatMapObservable { it -> Observable.fromIterable(it) }
+            .filter(this::checkIsNotNullIsland)
+            .toList()
+            .map { dbMapper.mapStationDaoToDbObject(it) }
+            .flatMapCompletable { rainfallDao.insertStationsRx(it) }
+            .toSingleDefault(true)
+
+    fun getStationDetailsRx(stationId: String): Single<StationDetails> =
+        rainfallClient.getStationDetailsRx(stationId)
+            .map {
+                apiMapper.mapStationDetailsDtoToDomainObject(it.items.first())
             }
 
-        if (stations != null) {
-            rainfallDao.insertStations(dbMapper.mapStationDaoToDbObject(stations))
-            return@withContext true
-        }
-        return@withContext false
+    private fun checkIsNotNullIsland(it: ItemDTO) = it.lat != 0.0 && it.long != 0.0
+
+    fun getStationListRx(): Observable<List<Station>> {
+        return rainfallDao.getStationsRx().map { dbMapper.mapDbStationToDomainObject(it) }
     }
-
-    suspend fun getStationDetails(stationId: String): StationDetails? = withContext(ioDispatcher) {
-        try {
-            val response: StationDetailsDTO = rainfallClient.getStationDetails(stationId)
-
-            response.items.firstOrNull()?.let { apiMapper.mapStationDetailsDtoToDomainObject(it) }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    fun getStationList() =
-        rainfallDao
-            .getStations()
-            .map { dbMapper.mapDbStationToDomainObject(it) }
 }

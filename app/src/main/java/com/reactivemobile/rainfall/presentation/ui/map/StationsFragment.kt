@@ -47,7 +47,7 @@ class StationsFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.stationsList.observe(viewLifecycleOwner, ::updateMap)
+        viewModel.stationsListRx.observe(viewLifecycleOwner, ::updateMap)
 
         viewModel.stationsLoading.observe(viewLifecycleOwner, { loadingGroup.showHide(it) })
     }
@@ -92,13 +92,15 @@ class StationsFragment : Fragment() {
 
             setupObservers()
 
-            viewModel.fetchStationList()
+            fetchStationList()
 
-            retryButton.setOnClickListener { viewModel.fetchStationList() }
+            retryButton.setOnClickListener { fetchStationList() }
         }
 
         map.getMapAsync(callback)
     }
+
+    private fun fetchStationList() = viewModel.fetchStationListRx()
 
     private fun setupMap(it: GoogleMap) {
         googleMap = it
@@ -112,6 +114,11 @@ class StationsFragment : Fragment() {
         }
 
         map.onResume()
+    }
+
+    override fun onDetach() {
+        viewModel.viewDetached()
+        super.onDetach()
     }
 
     companion object {

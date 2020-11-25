@@ -3,10 +3,11 @@ package com.reactivemobile.rainfall.presentation.ui.details
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.reactivemobile.rainfall.domain.repository.RainfallRepository
 import com.reactivemobile.rainfall.presentation.toHumanReadableDate
-import kotlinx.coroutines.launch
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class StationDetailsViewModel(private val repository: RainfallRepository, private val stationId: String) : ViewModel() {
 
@@ -14,20 +15,24 @@ class StationDetailsViewModel(private val repository: RainfallRepository, privat
 
     val stationDetails: LiveData<StationDetailsEvent> = _stationDetails
 
-    fun fetchStationDetails() {
-        viewModelScope.launch {
+    private val compositeDisposable = CompositeDisposable()
 
-            val stationDetails = repository.getStationDetails(stationId)
+    fun fetchStationDetailsRx() =
+        compositeDisposable.add(
+            repository.getStationDetailsRx(stationId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ details ->
+                    _stationDetails.postValue(with(details)
+                    {
+                        StationDetailsEvent.StationDetailsSuccess(depth, unit, date?.toHumanReadableDate())
+                    })
+                }, {
+                    _stationDetails.postValue(StationDetailsEvent.StationDetailsFailure)
+                })
+        )
 
-            val outcome = if (stationDetails != null) {
-                StationDetailsEvent.StationDetailsSuccess(stationDetails.depth, stationDetails.unit, stationDetails.date?.toHumanReadableDate())
-            } else {
-                StationDetailsEvent.StationDetailsFailure
-            }
-
-            _stationDetails.postValue(outcome)
-        }
-    }
+    fun viewDetached() = compositeDisposable.dispose()
 
     sealed class StationDetailsEvent {
         class StationDetailsSuccess(val depth: Double?, val unit: String?, val date: String?) : StationDetailsEvent()

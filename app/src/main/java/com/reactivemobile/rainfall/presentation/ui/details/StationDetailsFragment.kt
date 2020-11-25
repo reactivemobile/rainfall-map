@@ -35,7 +35,7 @@ class StationDetailsFragment : DialogFragment() {
 
         setupObservers()
 
-        viewModel.fetchStationDetails()
+        viewModel.fetchStationDetailsRx()
     }
 
     private fun setupObservers() {
@@ -50,6 +50,11 @@ class StationDetailsFragment : DialogFragment() {
                 name.text = getString(R.string.error_loading_details)
             }
         })
+    }
+
+    override fun onDetach() {
+        viewModel.viewDetached()
+        super.onDetach()
     }
 
     companion object {

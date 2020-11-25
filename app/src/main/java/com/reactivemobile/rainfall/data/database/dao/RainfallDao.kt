@@ -5,14 +5,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.reactivemobile.rainfall.data.database.entities.DbStation
-import kotlinx.coroutines.flow.Flow
+import io.reactivex.Completable
+import io.reactivex.Observable
 
 @Dao
 interface RainfallDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertStations(stations: List<DbStation>)
+    fun insertStationsRx(stations: List<DbStation>): Completable
 
     @Query("SELECT * FROM station_list_table")
-    fun getStations(): Flow<List<DbStation>>
+    fun getStationsRx(): Observable<List<DbStation>>
 }
