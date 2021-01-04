@@ -1,13 +1,12 @@
 package com.reactivemobile.rainfall.presentation.ui.map
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -16,34 +15,26 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.reactivemobile.rainfall.R
-import com.reactivemobile.rainfall.application.RainfallApplication
 import com.reactivemobile.rainfall.domain.model.Station
 import com.reactivemobile.rainfall.presentation.gone
 import com.reactivemobile.rainfall.presentation.show
 import com.reactivemobile.rainfall.presentation.showHide
 import com.reactivemobile.rainfall.presentation.ui.details.StationDetailsFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_stations.*
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class StationsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = inflater.inflate(R.layout.fragment_stations, container, false)
 
     private lateinit var googleMap: GoogleMap
 
-    @Inject
-    lateinit var viewModelFactory: StationsViewModelFactory
-
-    private val viewModel: StationsViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: StationsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (activity?.application as RainfallApplication).appComponent.inject(this)
     }
 
     private fun setupObservers() {

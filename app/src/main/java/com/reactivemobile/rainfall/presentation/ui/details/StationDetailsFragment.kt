@@ -7,26 +7,22 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.reactivemobile.rainfall.R
-import com.reactivemobile.rainfall.application.RainfallApplication
 import com.reactivemobile.rainfall.presentation.gone
 import com.reactivemobile.rainfall.presentation.ui.details.StationDetailsViewModel.StationDetailsEvent.StationDetailsSuccess
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_station_details.*
-import javax.inject.Inject
 
 const val EXTRA_STATION_ID = "EXTRA_STATION_ID"
 
+@AndroidEntryPoint
 class StationDetailsFragment : DialogFragment() {
 
-    @Inject
-    lateinit var viewModelFactory: StationDetailsViewModelFactory
-
-    private val viewModel: StationDetailsViewModel by viewModels { viewModelFactory.apply { bind(this@StationDetailsFragment) } }
+    private val viewModel: StationDetailsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        (activity?.application as RainfallApplication).appComponent.inject(this)
         return inflater.inflate(R.layout.fragment_station_details, container, false)
     }
 

@@ -1,5 +1,6 @@
 package com.reactivemobile.rainfall.presentation.ui.map
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class StationsViewModel(private val rainfallRepository: RainfallRepository) : ViewModel() {
+class StationsViewModel @ViewModelInject constructor(private val rainfallRepository: RainfallRepository) : ViewModel() {
 
     private val responseFlow = MutableStateFlow(true)
 

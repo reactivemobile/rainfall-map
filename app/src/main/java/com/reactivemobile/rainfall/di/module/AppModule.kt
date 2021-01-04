@@ -7,26 +7,27 @@ import com.reactivemobile.rainfall.data.database.mapper.DbMapper
 import com.reactivemobile.rainfall.data.network.client.RainfallClient
 import com.reactivemobile.rainfall.data.network.mapper.ApiMapper
 import com.reactivemobile.rainfall.domain.repository.RainfallRepository
-import com.reactivemobile.rainfall.presentation.ui.details.StationDetailsViewModelFactory
-import com.reactivemobile.rainfall.presentation.ui.map.StationsViewModelFactory
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 @Module
-class AppModule(private val context: Context) {
+@InstallIn(
+    ActivityRetainedComponent::class
+)
+class AppModule() {
 
     @Provides
-    @Singleton
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
-    @Singleton
     fun provideRainfallClient(): RainfallClient =
         Retrofit.Builder().baseUrl("https://environment.data.gov.uk")
             .client(OkHttpClient.Builder().build())
@@ -34,19 +35,15 @@ class AppModule(private val context: Context) {
             .build().create(RainfallClient::class.java)
 
     @Provides
-    @Singleton
-    fun provideRainfallDao(): RainfallDao = RainfallDatabase.create(context).rainfallDao()
+    fun provideRainfallDao(@ApplicationContext context: Context): RainfallDao = RainfallDatabase.create(context).rainfallDao()
 
     @Provides
-    @Singleton
     fun provideApiMapper(): ApiMapper = ApiMapper()
 
     @Provides
-    @Singleton
     fun provideDbMapper(): DbMapper = DbMapper()
 
     @Provides
-    @Singleton
     fun provideRepository(
         coroutineDispatcher: CoroutineDispatcher,
         rainfallClient: RainfallClient,
@@ -60,12 +57,4 @@ class AppModule(private val context: Context) {
         rainfallDao,
         dbMapper
     )
-
-    @Provides
-    @Singleton
-    fun provideRainfallViewModelFactory(repository: RainfallRepository): StationsViewModelFactory = StationsViewModelFactory(repository)
-
-    @Provides
-    @Singleton
-    fun provideStationDetailsViewModelFactory(repository: RainfallRepository): StationDetailsViewModelFactory = StationDetailsViewModelFactory(repository)
 }

@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commitNow
 import com.reactivemobile.rainfall.R
 import com.reactivemobile.rainfall.presentation.ui.map.StationsFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RainfallActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
