@@ -3,10 +3,12 @@ package com.reactivemobile.rainfall.di.module
 import android.content.Context
 import com.reactivemobile.rainfall.data.database.RainfallDatabase
 import com.reactivemobile.rainfall.data.database.dao.RainfallDao
-import com.reactivemobile.rainfall.data.database.mapper.DbMapper
+import com.reactivemobile.rainfall.data.database.mapper.DbMapperImpl
 import com.reactivemobile.rainfall.data.network.client.RainfallClient
 import com.reactivemobile.rainfall.data.network.mapper.ApiMapper
+import com.reactivemobile.rainfall.data.network.mapper.ApiMapperImpl
 import com.reactivemobile.rainfall.domain.repository.RainfallRepository
+import com.reactivemobile.rainfall.domain.repository.RainfallRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,10 +40,10 @@ class AppModule() {
     fun provideRainfallDao(@ApplicationContext context: Context): RainfallDao = RainfallDatabase.create(context).rainfallDao()
 
     @Provides
-    fun provideApiMapper(): ApiMapper = ApiMapper()
+    fun provideApiMapper(): ApiMapper = ApiMapperImpl()
 
     @Provides
-    fun provideDbMapper(): DbMapper = DbMapper()
+    fun provideDbMapper(): DbMapperImpl = DbMapperImpl()
 
     @Provides
     fun provideRepository(
@@ -49,8 +51,8 @@ class AppModule() {
         rainfallClient: RainfallClient,
         apiMapper: ApiMapper,
         rainfallDao: RainfallDao,
-        dbMapper: DbMapper
-    ): RainfallRepository = RainfallRepository(
+        dbMapper: DbMapperImpl
+    ): RainfallRepository = RainfallRepositoryImpl(
         coroutineDispatcher,
         rainfallClient,
         apiMapper,

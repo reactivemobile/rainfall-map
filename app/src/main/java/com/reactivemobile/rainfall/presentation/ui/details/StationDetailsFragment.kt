@@ -17,7 +17,7 @@ const val EXTRA_STATION_ID = "EXTRA_STATION_ID"
 @AndroidEntryPoint
 class StationDetailsFragment : DialogFragment() {
 
-    private val viewModel: StationDetailsViewModel by viewModels()
+    private val viewModel by viewModels<StationDetailsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -1,0 +1,26 @@
+ext.versions = [
+        // Core
+        materialVersion      : '1.4.0-alpha01',
+        constraintVersion    : '2.0.4',
+
+        // architecture components
+        fragmentVersion      : '1.3.1',
+        lifecycleLivedataKtxVersion : '2.3.0',
+        roomVersion          : '2.3.0-beta03',
+        archCompomentVersion : '2.1.0',
+
+        // maps
+        mapsVersion          : '17.0.0',
+
+        // di
+        hiltCoreVersion      : '2.33-beta',
+        hiltVersion          : '1.0.0-beta01',
+
+        // network
+        retrofitVersion      : '2.9.0',
+        okhttpVersion        : '4.9.0',
+        gsonConverterVersion : '2.9.0',
+
+        // coroutines
+        coroutinesVersion    : '1.4.1'
+]

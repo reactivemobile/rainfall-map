@@ -30,7 +30,7 @@ class StationsFragment : Fragment() {
 
     private lateinit var googleMap: GoogleMap
 
-    private val viewModel: StationsViewModel by viewModels()
+    private val viewModel by viewModels<StationsViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
