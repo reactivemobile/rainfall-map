@@ -11,8 +11,6 @@ data class ItemDTO(
     @SerializedName("long") val long: Double,
 )
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-
 data class StationDetailsDTO(@SerializedName("items") val items: List<ItemDetailsDTO>)
 
 data class ItemDetailsDTO(

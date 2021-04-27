@@ -23,7 +23,7 @@ class RainfallRepositoryImpl @Inject constructor(
         val stations =
             try {
                 rainfallClient.getStationList().items
-                    .filter { it.lat != 0.0 && it.long != 0.0 } // Some stations are not reporting location correctly
+                    .filter { item -> item.lat != 0.0 && item.long != 0.0 } // Some stations are not reporting location correctly
             } catch (e: Exception) {
                 null
             }
@@ -39,7 +39,7 @@ class RainfallRepositoryImpl @Inject constructor(
         try {
             val response: StationDetailsDTO = rainfallClient.getStationDetails(stationId)
 
-            response.items.firstOrNull()?.let { apiMapper.mapStationDetailsDtoToDomainObject(it) }
+            response.items.firstOrNull()?.let { item -> apiMapper.mapStationDetailsDtoToDomainObject(item) }
         } catch (e: Exception) {
             null
         }
